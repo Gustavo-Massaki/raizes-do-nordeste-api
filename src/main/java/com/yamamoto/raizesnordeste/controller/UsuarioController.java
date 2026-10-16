@@ -16,6 +16,11 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    @PostMapping
+    public Usuario createUsuario(@RequestBody Usuario usuario){
+        return usuarioService.createUsuario(usuario);
+    }
+
     @GetMapping
     public List<Usuario> getAllUsuario(){
         return usuarioService.getAllUsuario();
@@ -24,11 +29,6 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public Usuario getUsuarioById(@PathVariable Long id){
         return usuarioService.getUsuarioById(id);
-    }
-
-    @PostMapping
-    public Usuario createUsuario(@RequestBody Usuario usuario){
-        return usuarioService.createUsuario(usuario);
     }
 
     @DeleteMapping("/{id}")
