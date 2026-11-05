@@ -9,4 +9,5 @@ public interface EstoqueRepository extends JpaRepository<Estoque, Long> {
 
     boolean existsByUnidadeAndProduto(Unidade unidade, Produto produto);
 
+    boolean existsByUnidadeAndProdutoAndIdNot(Unidade unidade, Produto produto, Long id);
 }
