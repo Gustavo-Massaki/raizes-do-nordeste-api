@@ -1,4 +1,4 @@
-package com.yamamoto.raizesnordeste.entity;
+package com.yamamoto.raizesnordeste.enums;
 
 public enum Perfil {
     CLIENTE, ADMIN, COZINHEIRO, ATENDENTE

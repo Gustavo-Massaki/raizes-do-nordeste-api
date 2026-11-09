@@ -1,5 +1,6 @@
 package com.yamamoto.raizesnordeste.entity;
 
+import com.yamamoto.raizesnordeste.enums.Perfil;
 import jakarta.persistence.*;
 
 @Entity
