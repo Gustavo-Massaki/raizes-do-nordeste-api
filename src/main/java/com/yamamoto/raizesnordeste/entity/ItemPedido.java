@@ -1,5 +1,6 @@
 package com.yamamoto.raizesnordeste.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ public class ItemPedido {
     private Integer quantidade;
     private BigDecimal valorUnitario;
 
+    @JsonBackReference
     @ManyToOne
     private Pedido pedido;
 

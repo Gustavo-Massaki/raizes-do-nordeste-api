@@ -1,5 +1,6 @@
 package com.yamamoto.raizesnordeste.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yamamoto.raizesnordeste.enums.CanalPedido;
 import com.yamamoto.raizesnordeste.enums.FormaPagamento;
 import com.yamamoto.raizesnordeste.enums.StatusPedido;
@@ -23,7 +24,8 @@ public class Pedido {
     @ManyToOne
     private Unidade unidade;
 
-    @OneToMany(mappedBy = "pedido")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<ItemPedido> itens = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -45,6 +47,10 @@ public class Pedido {
 
     public void definirValorTotal(BigDecimal valorTotal){
         this.valorTotal = valorTotal;
+    }
+
+    public void definirDataHora(){
+        this.dataHora = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -97,5 +103,9 @@ public class Pedido {
 
     public void setCanalPedido(CanalPedido canalPedido) {
         this.canalPedido = canalPedido;
+    }
+
+    public List<ItemPedido> getItens() {
+        return itens;
     }
 }
