@@ -1,5 +1,7 @@
 package com.yamamoto.raizesnordeste.service;
 
+import com.yamamoto.raizesnordeste.dto.UsuarioRequestDTO;
+import com.yamamoto.raizesnordeste.dto.UsuarioResponseDTO;
 import com.yamamoto.raizesnordeste.entity.Usuario;
 import com.yamamoto.raizesnordeste.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,12 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public Usuario createUsuario(Usuario usuario){
+    public Usuario createUsuario(UsuarioRequestDTO dto){
+        Usuario usuario = new Usuario();
+        usuario.setNome(dto.nome());
+        usuario.setEmail(dto.email());
+        usuario.setSenha(dto.senha());
+        usuario.setPerfil(dto.perfil());
         return usuarioRepository.save(usuario);
     }
 
@@ -24,21 +31,24 @@ public class UsuarioService {
     }
 
     public Usuario getUsuarioById(Long id){
-        return usuarioRepository.findById(id).orElseThrow();
+        return usuarioRepository.findById(id).orElseThrow(()-> new RuntimeException("Usuario não encontrado"));
     }
 
     public void deleteUsuario(Long id){
         usuarioRepository.deleteById(id);
     }
 
-    public Usuario updateUsuario(Long id, Usuario updatedUsuario){
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow();
-        usuario.setNome(updatedUsuario.getNome());
-        usuario.setEmail(updatedUsuario.getEmail());
-        usuario.setSenha(updatedUsuario.getSenha());
-        usuario.setPerfil(updatedUsuario.getPerfil());
+    public Usuario updateUsuario(Long id, UsuarioRequestDTO dto){
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(()-> new RuntimeException("Usuario não encontrado"));
+        usuario.setNome(dto.nome());
+        usuario.setEmail(dto.email());
+        usuario.setSenha(dto.senha());
+        usuario.setPerfil(dto.perfil());
 
         return usuarioRepository.save(usuario);
     }
 
+    public UsuarioResponseDTO toResponseDTO(Usuario usuario){
+        return new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getPerfil());
+    }
 }

@@ -5,6 +5,7 @@ import com.yamamoto.raizesnordeste.dto.ItemPedidoResponseDTO;
 import com.yamamoto.raizesnordeste.dto.PedidoDTO;
 import com.yamamoto.raizesnordeste.dto.PedidoResponseDTO;
 import com.yamamoto.raizesnordeste.entity.*;
+import com.yamamoto.raizesnordeste.enums.CanalPedido;
 import com.yamamoto.raizesnordeste.enums.StatusPedido;
 import com.yamamoto.raizesnordeste.repository.*;
 import org.springframework.stereotype.Service;
@@ -98,5 +99,33 @@ public class PedidoService {
                 pedido.getDataHora(),
                 itens
         );
+    }
+
+    public List<Pedido> findByCanalPedido(CanalPedido canalPedido){
+        return pedidoRepository.findByCanalPedido(canalPedido);
+    }
+
+    public List<Pedido> findByStatus(StatusPedido statusPedido){
+        return pedidoRepository.findByStatus(statusPedido);
+    }
+
+    public List<Pedido> findByCanalPedidoAndStatus(CanalPedido canalPedido, StatusPedido statusPedido){
+        return pedidoRepository.findByCanalPedidoAndStatus(canalPedido, statusPedido);
+    }
+
+    @Transactional
+    public Pedido atualizarStatus(Long id, StatusPedido novoStatus){
+        Pedido pedido = pedidoRepository.findById(id).orElseThrow(()-> new RuntimeException("Pedido não encontrado"));
+
+        if (pedido.getStatus() == StatusPedido.CANCELADO || pedido.getStatus() == StatusPedido.CONCLUIDO || pedido.getStatus() == StatusPedido.PAGAMENTO_RECUSADO){
+            throw new RuntimeException("Pedido já processado");
+        }
+
+        if (pedido.getStatus() == StatusPedido.PENDENTE && novoStatus != StatusPedido.CANCELADO){
+            throw new RuntimeException("Pedido não foi pago ainda");
+        }
+
+        pedido.setStatus(novoStatus);
+        return pedidoRepository.save(pedido);
     }
 }

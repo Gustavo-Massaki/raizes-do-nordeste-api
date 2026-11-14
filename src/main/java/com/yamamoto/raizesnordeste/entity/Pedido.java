@@ -19,9 +19,11 @@ public class Pedido {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Usuario usuario;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Unidade unidade;
 
     @JsonManagedReference
@@ -29,12 +31,15 @@ public class Pedido {
     private List<ItemPedido> itens = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private StatusPedido status;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private FormaPagamento formaPagamento;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CanalPedido canalPedido;
 
     private BigDecimal valorTotal;

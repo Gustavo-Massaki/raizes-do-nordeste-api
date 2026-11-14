@@ -1,7 +1,10 @@
 package com.yamamoto.raizesnordeste.controller;
 
-import com.yamamoto.raizesnordeste.entity.Usuario;
+import com.yamamoto.raizesnordeste.dto.UsuarioRequestDTO;
+import com.yamamoto.raizesnordeste.dto.UsuarioResponseDTO;
 import com.yamamoto.raizesnordeste.service.UsuarioService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,28 +20,30 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public Usuario createUsuario(@RequestBody Usuario usuario){
-        return usuarioService.createUsuario(usuario);
+    @ResponseStatus(HttpStatus.CREATED)
+    public UsuarioResponseDTO createUsuario(@RequestBody @Valid UsuarioRequestDTO usuario){
+        return usuarioService.toResponseDTO(usuarioService.createUsuario(usuario));
     }
 
     @GetMapping
-    public List<Usuario> getAllUsuario(){
-        return usuarioService.getAllUsuario();
+    public List<UsuarioResponseDTO> getAllUsuario(){
+        return usuarioService.getAllUsuario().stream().map(usuario -> usuarioService.toResponseDTO(usuario)).toList();
     }
 
     @GetMapping("/{id}")
-    public Usuario getUsuarioById(@PathVariable Long id){
-        return usuarioService.getUsuarioById(id);
+    public UsuarioResponseDTO getUsuarioById(@PathVariable Long id){
+        return usuarioService.toResponseDTO(usuarioService.getUsuarioById(id));
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUsuario(@PathVariable Long id){
         usuarioService.deleteUsuario(id);
     }
 
     @PutMapping("/{id}")
-    public Usuario updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario){
-        return usuarioService.updateUsuario(id, usuario);
+    public UsuarioResponseDTO updateUsuario(@PathVariable Long id, @RequestBody @Valid UsuarioRequestDTO usuario){
+        return usuarioService.toResponseDTO(usuarioService.updateUsuario(id, usuario));
     }
 
 }
