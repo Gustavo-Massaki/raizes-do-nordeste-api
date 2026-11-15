@@ -1,12 +1,13 @@
 package com.yamamoto.raizesnordeste.service;
 
-
 import com.yamamoto.raizesnordeste.dto.PagamentoDTO;
 import com.yamamoto.raizesnordeste.entity.Estoque;
 import com.yamamoto.raizesnordeste.entity.ItemPedido;
 import com.yamamoto.raizesnordeste.entity.Pedido;
 import com.yamamoto.raizesnordeste.enums.ResultadoPagamento;
 import com.yamamoto.raizesnordeste.enums.StatusPedido;
+import com.yamamoto.raizesnordeste.exception.ConflitoNegocioException;
+import com.yamamoto.raizesnordeste.exception.RecursoNaoEncontradoException;
 import com.yamamoto.raizesnordeste.repository.EstoqueRepository;
 import com.yamamoto.raizesnordeste.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
@@ -26,20 +27,20 @@ public class PagamentoService {
 
     @Transactional
     public void processarPagamento(PagamentoDTO pagamento){
-        Pedido pedido = pedidoRepository.findById(pagamento.pedidoId()).orElseThrow(()-> new RuntimeException("Pedido não encontrado"));
+        Pedido pedido = pedidoRepository.findById(pagamento.pedidoId()).orElseThrow(()-> new RecursoNaoEncontradoException("Pedido não encontrado"));
         if (!pedido.getStatus().equals(StatusPedido.PENDENTE)){
-            throw new RuntimeException("Pedido já processado");
+            throw new ConflitoNegocioException("Pedido já processado");
         }
         if (pagamento.resultado() == ResultadoPagamento.APROVADO){
 
             for (ItemPedido item : pedido.getItens()) {
-                Estoque estoque = estoqueRepository.findByUnidadeAndProduto(pedido.getUnidade(), item.getProduto()).orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
+                Estoque estoque = estoqueRepository.findByUnidadeAndProduto(pedido.getUnidade(), item.getProduto()).orElseThrow(() -> new RecursoNaoEncontradoException("Estoque não encontrado"));
                 if (estoque.getQuantidade() < item.getQuantidade()) {
-                    throw new RuntimeException("Sem estoque suficiente para o pedido");
+                    throw new ConflitoNegocioException("Sem estoque suficiente para o pedido");
                 }
             }
             for (ItemPedido item1 : pedido.getItens()){
-                Estoque estoque1 = estoqueRepository.findByUnidadeAndProduto(pedido.getUnidade(), item1.getProduto()).orElseThrow(()-> new RuntimeException("Sem estoque suficiente para o pedido"));
+                Estoque estoque1 = estoqueRepository.findByUnidadeAndProduto(pedido.getUnidade(), item1.getProduto()).orElseThrow(()-> new RecursoNaoEncontradoException("Estoque nao encontrado"));
                 estoque1.setQuantidade(estoque1.getQuantidade() - item1.getQuantidade());
                 estoqueRepository.save(estoque1);
             }

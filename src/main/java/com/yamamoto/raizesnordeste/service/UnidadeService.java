@@ -1,6 +1,7 @@
 package com.yamamoto.raizesnordeste.service;
 
 import com.yamamoto.raizesnordeste.entity.Unidade;
+import com.yamamoto.raizesnordeste.exception.RecursoNaoEncontradoException;
 import com.yamamoto.raizesnordeste.repository.UnidadeRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class UnidadeService {
     }
 
     public Unidade getUnidadeById(Long id){
-        return unidadeRepository.findById(id).orElseThrow();
+        return unidadeRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Unidade nao encontrada"));
     }
 
     public void removeUnidade(Long id){
@@ -32,7 +33,7 @@ public class UnidadeService {
     }
 
     public Unidade updateUnidade(Long id, Unidade updatedUnidade){
-        Unidade unidade = unidadeRepository.findById(id).orElseThrow();
+        Unidade unidade = unidadeRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Unidade nao encontrada"));
         unidade.setNome(updatedUnidade.getNome());
         unidade.setCidade(updatedUnidade.getCidade());
 

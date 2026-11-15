@@ -3,6 +3,8 @@ package com.yamamoto.raizesnordeste.service;
 import com.yamamoto.raizesnordeste.entity.Estoque;
 import com.yamamoto.raizesnordeste.entity.Produto;
 import com.yamamoto.raizesnordeste.entity.Unidade;
+import com.yamamoto.raizesnordeste.exception.ConflitoNegocioException;
+import com.yamamoto.raizesnordeste.exception.RecursoNaoEncontradoException;
 import com.yamamoto.raizesnordeste.repository.EstoqueRepository;
 import com.yamamoto.raizesnordeste.repository.ProdutoRepository;
 import com.yamamoto.raizesnordeste.repository.UnidadeRepository;
@@ -27,11 +29,11 @@ public class EstoqueService {
 
     public Estoque createEstoque(Estoque estoque){
 
-        Unidade unidade = unidadeRepository.findById(estoque.getUnidade().getId()).orElseThrow();
-        Produto produto = produtoRepository.findById(estoque.getProduto().getId()).orElseThrow();
+        Unidade unidade = unidadeRepository.findById(estoque.getUnidade().getId()).orElseThrow(() -> new RecursoNaoEncontradoException("Unidade nao encontrada"));
+        Produto produto = produtoRepository.findById(estoque.getProduto().getId()).orElseThrow(() -> new RecursoNaoEncontradoException("Produto nao encontrada"));
 
         if (estoqueRepository.existsByUnidadeAndProduto(unidade, produto)){
-            throw new RuntimeException("Produto já existente na unidade");
+            throw new ConflitoNegocioException("Produto já existente na unidade");
         }
 
         estoque.setUnidade(unidade);
@@ -45,7 +47,7 @@ public class EstoqueService {
     }
 
     public Estoque getEstoqueById(Long id){
-        return estoqueRepository.findById(id).orElseThrow();
+        return estoqueRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Estoque nao encontrado"));
     }
 
     public void removeEstoque(Long id){
@@ -53,12 +55,12 @@ public class EstoqueService {
     }
 
     public Estoque updateEstoque(Long id, Estoque updatedEstoque){
-        Estoque estoque = estoqueRepository.findById(id).orElseThrow();
+        Estoque estoque = estoqueRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Estoque nao encontrad"));
         Unidade unidade = estoque.getUnidade();
-        Produto produto = produtoRepository.findById(updatedEstoque.getProduto().getId()).orElseThrow();
+        Produto produto = produtoRepository.findById(updatedEstoque.getProduto().getId()).orElseThrow(() -> new RecursoNaoEncontradoException("Produto nao encontrado"));
 
         if (estoqueRepository.existsByUnidadeAndProdutoAndIdNot(unidade, produto, id)) {
-            throw new RuntimeException("Produto já cadastrado no estoque desta unidade");
+            throw new ConflitoNegocioException("Produto já cadastrado no estoque desta unidade");
         }
 
         estoque.setProduto(produto);

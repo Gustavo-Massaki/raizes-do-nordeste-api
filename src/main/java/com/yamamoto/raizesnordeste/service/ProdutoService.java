@@ -1,6 +1,7 @@
 package com.yamamoto.raizesnordeste.service;
 
 import com.yamamoto.raizesnordeste.entity.Produto;
+import com.yamamoto.raizesnordeste.exception.RecursoNaoEncontradoException;
 import com.yamamoto.raizesnordeste.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class ProdutoService {
     }
 
     public Produto getProdutoById(Long id){
-        return produtoRepository.findById(id).orElseThrow();
+        return produtoRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Produto nao encontrado"));
     }
 
     public void removeProduto(Long id){
@@ -32,7 +33,7 @@ public class ProdutoService {
     }
 
     public Produto updateProduto(Long id, Produto updatedProduto){
-        Produto produto = produtoRepository.findById(id).orElseThrow();
+        Produto produto = produtoRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Produto nao encontrado"));
         produto.setNome(updatedProduto.getNome());
         produto.setPreco(updatedProduto.getPreco());
 
