@@ -5,6 +5,7 @@ import com.yamamoto.raizesnordeste.dto.UsuarioResponseDTO;
 import com.yamamoto.raizesnordeste.entity.Usuario;
 import com.yamamoto.raizesnordeste.exception.RecursoNaoEncontradoException;
 import com.yamamoto.raizesnordeste.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,16 +14,18 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario createUsuario(UsuarioRequestDTO dto){
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
-        usuario.setSenha(dto.senha());
+        usuario.setSenha(passwordEncoder.encode(dto.senha()));
         usuario.setPerfil(dto.perfil());
         return usuarioRepository.save(usuario);
     }
@@ -43,7 +46,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id).orElseThrow(()-> new RecursoNaoEncontradoException("Usuario não encontrado"));
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
-        usuario.setSenha(dto.senha());
+        usuario.setSenha(passwordEncoder.encode(dto.senha()));
         usuario.setPerfil(dto.perfil());
 
         return usuarioRepository.save(usuario);
