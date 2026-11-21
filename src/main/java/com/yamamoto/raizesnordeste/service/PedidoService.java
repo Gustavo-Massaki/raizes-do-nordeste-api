@@ -26,13 +26,15 @@ public class PedidoService {
     private final UnidadeRepository unidadeRepository;
     private final ProdutoRepository produtoRepository;
     private final EstoqueRepository estoqueRepository;
+    private final LogAuditoriaService logAuditoriaService;
 
-    public PedidoService(PedidoRepository pedidoRepository, UsuarioRepository usuarioRepository, UnidadeRepository unidadeRepository, ProdutoRepository produtoRepository, EstoqueRepository estoqueRepository) {
+    public PedidoService(PedidoRepository pedidoRepository, UsuarioRepository usuarioRepository, UnidadeRepository unidadeRepository, ProdutoRepository produtoRepository, EstoqueRepository estoqueRepository, LogAuditoriaService logAuditoriaService) {
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
         this.unidadeRepository = unidadeRepository;
         this.produtoRepository = produtoRepository;
         this.estoqueRepository = estoqueRepository;
+        this.logAuditoriaService = logAuditoriaService;
     }
 
     @Transactional
@@ -73,7 +75,9 @@ public class PedidoService {
         }
 
         novoPedido.definirValorTotal(valorTotal);
-        return pedidoRepository.save(novoPedido);
+        Pedido pedidoSalvo = pedidoRepository.save(novoPedido);
+        logAuditoriaService.registrar("CRIACAO_PEDIDO", "Pedido", pedidoSalvo.getId(), "Canal: " + pedido.canalPedido() + " | Total: " + pedidoSalvo.getValorTotal());
+        return pedidoSalvo;
     }
 
     public List<Pedido> getAllPedido(){
@@ -128,6 +132,8 @@ public class PedidoService {
         }
 
         pedido.setStatus(novoStatus);
-        return pedidoRepository.save(pedido);
+        Pedido pedidoSalvo = pedidoRepository.save(pedido);
+        logAuditoriaService.registrar("ATUALIZAR_PEDIDO", "Pedido", pedidoSalvo.getId(), "Canal: " + pedido.getCanalPedido() + " | Novo status: " + novoStatus);
+        return pedidoSalvo;
     }
 }

@@ -19,10 +19,12 @@ public class PagamentoService {
 
     private final PedidoRepository pedidoRepository;
     private final EstoqueRepository estoqueRepository;
+    private final LogAuditoriaService logAuditoriaService;
 
-    public PagamentoService(PedidoRepository pedidoRepository, EstoqueRepository estoqueRepository) {
+    public PagamentoService(PedidoRepository pedidoRepository, EstoqueRepository estoqueRepository, LogAuditoriaService logAuditoriaService) {
         this.pedidoRepository = pedidoRepository;
         this.estoqueRepository = estoqueRepository;
+        this.logAuditoriaService = logAuditoriaService;
     }
 
     @Transactional
@@ -46,12 +48,13 @@ public class PagamentoService {
             }
             pedido.setStatus(StatusPedido.PAGO);
             pedidoRepository.save(pedido);
-
+            logAuditoriaService.registrar("PROCESSAMENTO_PAGAMENTO", "Pedido", pedido.getId(), "Resultado: " + pagamento.resultado());
         }
         else
         {
             pedido.setStatus(StatusPedido.PAGAMENTO_RECUSADO);
             pedidoRepository.save(pedido);
+            logAuditoriaService.registrar("PROCESSAMENTO_PAGAMENTO", "Pedido", pedido.getId(), "Resultado: " + pagamento.resultado());
         }
     }
 }

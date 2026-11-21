@@ -46,6 +46,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.DELETE, "/raizesnordeste/produtos/**", "/raizesnordeste/unidades/**", "/raizesnordeste/estoques/**", "/raizesnordeste/usuarios/**").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/raizesnordeste/usuarios/**").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/raizesnordeste/pedidos/*/status").hasAnyRole("ADMIN", "COZINHEIRO", "ATENDENTE")
+                    .requestMatchers(HttpMethod.GET,"/raizesnordeste/logs/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
